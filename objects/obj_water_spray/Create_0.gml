@@ -1,0 +1,1 @@
+shot_by_player=0;
