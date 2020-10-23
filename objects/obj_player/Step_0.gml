@@ -76,9 +76,10 @@ and hp>=1
 
 #region/*When you release the jump button, make the player fall*/
 if key_jump_released
-	{
-		vspeed=vspeed/2;
-	}
+and vspeed<0
+{
+	vspeed=vspeed/2;
+}
 
 #endregion
 
@@ -89,7 +90,14 @@ if!place_meeting(x,y+1,obj_wall)
 	}
 else
 	{
-		gravity=0;
+		if death_timer=0
+		{
+			gravity=0;
+		}
+		else
+		{
+			gravity=0.75;
+		}
 	}
 	#endregion
 
@@ -106,6 +114,7 @@ gravity_direction=270;
 if key_shoot
 	and image_xscale<0
 	and can_shoot=shoot_cooldown
+	and hp>=1
 		{
 			can_shoot=0;
 			obj=instance_create_depth(x,y,0,obj_water_spray);
@@ -122,6 +131,7 @@ if key_shoot
 if key_shoot
 	and image_xscale>0
 	and can_shoot=shoot_cooldown
+	and hp>=1
 		{
 			can_shoot=0;
 			obj=instance_create_depth(x,y,0,obj_water_spray);
@@ -141,6 +151,32 @@ if can_shoot<shoot_cooldown{can_shoot+=1;}
 if hp<=0
 {
 	sprite_index=spr_die;
+	death_timer+=1;
+	if death_timer>0
+	and death_timer<60
+	{
+		gravity=0;
+		hspeed=0;
+		vspeed=0;
+	}
+	if death_timer=60
+	{
+		vspeed=-10;
+	}
+	if death_timer>120
+	{
+		if global.sudden_death=true
+		{
+			room_goto(room_win_screen);
+		}
+		x=xstart;
+		y=ystart;
+		image_xscale=xscale_start;
+		hp=3;
+		blinking=60;
+		death_timer=0;
+	}
+	
 }
 else
 {
@@ -148,11 +184,38 @@ else
 }
 #endregion
 
+#region/*Transfer kill count to global kill count*/
+if player=1
+{
+	global.player1_kill_count=kill_count;
+}
+if player=2
+{
+	global.player2_kill_count=kill_count;
+}
+#endregion
 
+#region/*What direction to face when starting the game*/
+if player=1
+{
+	xscale_start=+1;
+}
 
+if player=2
+{
+	xscale_start=-1;
+}
+#endregion
 
+#region/*Timer Countdown*/
+timer_millisecond-=1;
+if timer_millisecond<0{timer-=1;timer_millisecond=60;}
+if timer<0
+{
+	room_goto(room_win_screen);
+}
 
-
+#endregion
 
 
 

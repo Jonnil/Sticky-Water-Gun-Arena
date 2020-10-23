@@ -2,7 +2,7 @@
 //vspeed=0;
 
 /*Collision Event with a solid object*/
-
+if death_timer<60{
 #region/*Push the player out of the solid object*/
 while(place_meeting(x,y,other))
 {
@@ -55,3 +55,4 @@ or(position_meeting(bbox_right+1,bbox_top+8,other))
 }#endregion/*Hitting wall to your right END*/
 
 /*MAKE IT SO JUMPING VOICES STOP WHEN YOU LAND*/
+}
